@@ -1,0 +1,36 @@
+name: Android CI Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Kodu yüklə
+        uses: actions/checkout@v4
+
+      - name: JDK quraşdır (Java 17)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Gradle cache
+        uses: gradle/gradle-build-action@v3
+
+      - name: İcazə ver (gradlew)
+        run: chmod +x gradlew
+
+      - name: Build et
+        run: ./gradlew assembleDebug
+
+      - name: APK upload (istəyə görə)
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
